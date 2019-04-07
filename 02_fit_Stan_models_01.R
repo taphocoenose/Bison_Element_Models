@@ -160,7 +160,7 @@ Model_List <- parLapply(cl, datamodels, function(i){
                          Par_k_d_0.7_1=length(which(loo_i$diagnostics$pareto_k>0.7 &
                                                     loo_i$diagnostics$pareto_k<1)),
                          Par_k_d_1_Inf=length(which(loo_i$diagnostics$pareto_k>1)),
-                         StringsAsFactors=FALSE)
+                         stringsAsFactors=FALSE)
 
   # Pointwise log likelihood
   lpd_pt_matrix <- loo_i$pointwise[,1]
