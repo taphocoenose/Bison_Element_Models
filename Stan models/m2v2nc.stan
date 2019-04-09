@@ -52,7 +52,7 @@ data{
  real<lower=0> pred1min[N_1];
  
  ///// Predictor 1 imputation variables ////
- ///// (i.e., N_ - observed) ////
+ ///// (i.e., N_1 - observed) ////
  // Number of imputed predictor 1 values
  int<lower=1> N_impute1;
  // Vector of positions for values to impute within
@@ -83,7 +83,7 @@ data{
  real<lower=0> pred2min[N_2];
  
  ///// Predictor 2 imputation variables ////
- ///// (i.e., N_ - observed) ////
+ ///// (i.e., N_2 - observed) ////
  // Number of imputed predictor 2 values
  int<lower=1> N_impute2;
  // Vector of positions for values to impute
@@ -100,7 +100,7 @@ data{
 
 parameters{
   
- // Glabal intercept parameters, one for
+ // Global intercept parameters, one for
  // each site type.
  vector[n_t] t_alpha;
  // Beta parameters for predictor 1, 
@@ -129,9 +129,9 @@ parameters{
  // Shape parameters for distributions of predictor 1
  // and predictor 2 values; beta distributed.
  vector<lower=0>[2] shape;
- // Mu offsets for each mean element type value
- // within predictor 1 and predictor 2. These are in
- // z-scores, as they are scaled by sigma[1] and sigma[2].
+ // Mu offsets for each mean element type value within
+ // predictor 1 and predictor 2. These are in z-score
+ // units, as they are scaled by sigma[1] and sigma[2].
  vector[n_1] loc1;
  vector[n_2] loc2;
  
@@ -170,7 +170,7 @@ transformed parameters{
 
  // Cholesky decomposition for a matrix of component
  // level parameters for each site type (the loop
- // travereses matrixes for each site type).
+ // traverses matrixes for each site type).
  for (j in 1:n_t) {
    
   v_c[j][1:t_N[j], ] = (diag_pre_multiply(scale_c[j], 
@@ -203,7 +203,7 @@ model{
  vector[N_1] pred1sc;
  vector[N_2] pred2sc;
  
- // Lambdas for poisson outcome
+ // Lambdas for Poisson outcome
  vector[N] lambda; 
  // Predictor 1 and predictor 2 beta distribution
  // location values, (0, 1) scale.
@@ -308,12 +308,12 @@ model{
     
    } else if (I_Rev1[j, 2] == 0) {
      // Element type corresponds to another already specified
-     // element type. E.g., "pelvis = sacrum"
+     // element type, e.g., "pelvis" = "sacrum"
     PRED[1][j] = pred1sc[I_Rev1[j, 1]];
     
    } else if (I_Rev1[j, 3] == 0) {
      // Various element types that are aggregates ot two element
-     // types, such as metapodial = metacarpal + metatarsal.
+     // types, e.g., "metapodial" = ("metacarpal" + "metatarsal")/2.
     PRED[1][j] = pred1sc[I_Rev1[j, 1]] * 0.5 + pred1sc[I_Rev1[j, 2]] * 0.5;
 
    } else if (I_Rev1[j, 4] == 0) {
@@ -343,12 +343,12 @@ model{
 
    } else if (I_Rev2[j, 2] == 0) {
      // Element type corresponds to another already specified
-     // element type. E.g., "pelvis = sacrum"
+     // element type, e.g., "pelvis" = "sacrum"
     PRED[2][j] = pred2sc[I_Rev2[j, 1]];
 
    } else if (I_Rev2[j, 3] == 0) {
      // Various element types that are aggregates ot two element
-     // types, such as metapodial = metacarpal + metatarsal.
+     // types, e.g., "metapodial" = ("metacarpal" + "metatarsal")/2.
     PRED[2][j] = pred2sc[I_Rev2[j, 1]] * 0.5 + pred2sc[I_Rev2[j, 2]] * 0.5;
 
    } else if (I_Rev2[j, 4] == 0) {
@@ -390,7 +390,7 @@ generated quantities{
  vector[N] PRED[2];
  // Vector of imputed values put back on predictor 1
  // and predictor 2 scales from the (0, 1) scale that 
- // was used to model values on the beta scale.
+ // was used to model values as beta distributed.
  vector[N_impute1] pred1sc;
  vector[N_impute2] pred2sc;
  

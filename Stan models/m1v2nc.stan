@@ -65,7 +65,7 @@ data{
 
 parameters{
   
- // Glabal intercept parameters, one for
+ // Global intercept parameters, one for
  // each site type.
  vector[n_t] t_alpha;
  // Beta parameter for predictor, one for
@@ -93,9 +93,9 @@ parameters{
  // Shape parameter for distribution of predictor
  // values; beta distributed.
  real<lower=0> shape;
- // Mu offsets for each mean element type value
- // within predictor. These are in z-scores, as 
- // they are scaled by sigma.
+ // Mu offsets for each mean element type value within
+ // predictor. These are in z-score units, as they
+ // are scaled by sigma.
  vector[n_] loc;
  
  // Predictor is modelled as beta distribution:
@@ -130,7 +130,7 @@ transformed parameters{
  
  // Cholesky decomposition for a matrix of component
  // level parameters for each site type (the loop
- // travereses matrixes for each site type).
+ // traverses matrixes for each site type).
  for (j in 1:n_t) {
    
   v_c[j][1:t_N[j], ] = (diag_pre_multiply(scale_c[j], 
@@ -159,7 +159,7 @@ model{
  // values on the beta scale.
  vector[N_] pred1sc;
  
- // Lambdas for poisson outcome
+ // Lambdas for Poisson outcome
  vector[N] lambda; 
  // Predictor beta distribution location values, 
  // (0, 1) scale.
@@ -237,12 +237,12 @@ model{
 
    } else if (I_Rev[j, 2] == 0) {
      // Element type corresponds to another already specified
-     // element type. E.g., "pelvis = sacrum"
+     // element type, e.g., "pelvis" = "sacrum"
     PRED1[j] = pred1sc[I_Rev[j, 1]];
 
    } else if (I_Rev[j, 3] == 0) {
      // Various element types that are aggregates ot two element
-     // types, such as metapodial = metacarpal + metatarsal.
+     // types, e.g., "metapodial"" = ("metacarpal" + "metatarsal")/2.
     PRED1[j] = pred1sc[I_Rev[j, 1]] * 0.5 + pred1sc[I_Rev[j, 2]] * 0.5;
 
    } else if (I_Rev[j, 4] == 0) {
@@ -281,7 +281,7 @@ generated quantities{
  vector[N] PRED1;
  // Vector of imputed values put back on predictor
  // scale from the (0, 1) scale that was used to model
- // values on the beta scale.
+ // values as beta distributed.
  vector[N_impute] pred1sc;
  
  // Put imputed (0, 1) values back on the predictor scale.
